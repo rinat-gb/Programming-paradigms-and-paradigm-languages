@@ -345,79 +345,80 @@ def wait_certain_letter(msg: str, availables: str) -> str:
         return answer
 
 
-answer = wait_certain_letter('Если хочешь сыграть в "Крестики-нолики"?\n' \
-                             'Ответь [Д]а или [Н]ет ([Y]es или [N]o: ', 'днyn')
-if answer in 'нn':
-    print("Пока! Увидимся в следующий раз!")
-    sys.exit(0)
-
-answer = wait_certain_letter('Хочешь играть когда я [Т]упой или [У]мный?: ', 'ту')
-
-game = EasyTicTacToe() if answer == 'т' else HardTicTacToe()
-
-answer = wait_certain_letter('Хочешь играть крестиками [X] или ноликами [O]?: ', 'xoхо')
-
-if answer in 'xх':
-    game.human_player = 'X'
-    game.computer_player = 'O'
-else:
-    game.human_player = 'O'
-    game.computer_player = 'X'
-
-if game.computer_player == 'X':
-    print("Я начинаю!")
-    game.is_computer_move = True
-else:
-    print("Ты начинаешь!")
-    game.is_computer_move = False
-
-print()
-
 while True:
-    game.print_board()
+    answer = wait_certain_letter('Если хочешь сыграть в "Крестики-нолики"?\n' \
+                                 'Ответь [Д]а или [Н]ет: ', 'дн')
+    if answer == 'н':
+        print("Пока! Увидимся в следующий раз!")
+        sys.exit(0)
 
-    if game.is_computer_move:
-        move = game.calc_move()
-        print(f"Я поставлю свой '{game.computer_player}' на клетку под номером {move}!")
-        game.do_move(move, game.computer_player)
+    answer = wait_certain_letter('Хочешь играть когда я [Т]упой или [У]мный?: ', 'ту')
+
+    game = EasyTicTacToe() if answer == 'т' else HardTicTacToe()
+
+    answer = wait_certain_letter('Хочешь играть крестиками [X] или ноликами [O]?: ', 'xoхо')
+
+    if answer in 'xх':
+        game.human_player = 'X'
+        game.computer_player = 'O'
+    else:
+        game.human_player = 'O'
+        game.computer_player = 'X'
+
+    if game.computer_player == 'X':
+        print("Я начинаю!")
+        game.is_computer_move = True
+    else:
+        print("Ты начинаешь!")
+        game.is_computer_move = False
+
+    print()
+
+    while True:
+        game.print_board()
+
+        if game.is_computer_move:
+            move = game.calc_move()
+            print(f"Я поставлю свой '{game.computer_player}' на клетку под номером {move}!")
+            game.do_move(move, game.computer_player)
+            game.print_board()
+
+            status = game.has_game_over()
+            if status[0]:
+                if status[1] == game.computer_player:
+                    print("Ха! Я выиграл!")
+                else:
+                    print("Я сделал ничью!")
+
+                break
+
+            print('Отвечай!')
+
+        while True:
+            print(f"Выбирай куда ты поставишь свой '{game.human_player}': ", end='')
+            move = input()
+
+            try:
+                move = int(move)
+            except ValueError:
+                print("Ты ввёл не число, повтори ввод!")
+                continue
+
+            if game.do_move(move, game.human_player) is None:
+                print("На какую-то странную клетку ты пошёл, повтори ввод!")
+                continue
+            else:
+                break
+
         game.print_board()
 
         status = game.has_game_over()
         if status[0]:
-            if status[1] == game.computer_player:
-                print("Ха! Я выиграл!")
+            if status[1] == game.human_player:
+                print("Ты выиграл!")
             else:
-                print("Я сделал ничью!")
+                print("Ты сделал ничью!")
 
             break
 
-        print('Отвечай!')
-
-    while True:
-        print(f"Выбирай куда ты поставишь свой '{game.human_player}': ", end='')
-        move = input()
-
-        try:
-            move = int(move)
-        except ValueError:
-            print("Ты ввёл не число, повтори ввод!")
-            continue
-
-        if game.do_move(move, game.human_player) is None:
-            print("На какую-то странную клетку ты пошёл, повтори ввод!")
-            continue
-        else:
-            break
-
-    game.print_board()
-
-    status = game.has_game_over()
-    if status[0]:
-        if status[1] == game.human_player:
-            print("Ты выиграл!")
-        else:
-            print("Ты сделал ничью!")
-
-        break
-
-    game.is_computer_move = True
+        game.is_computer_move = True
